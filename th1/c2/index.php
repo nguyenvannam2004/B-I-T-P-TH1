@@ -1,16 +1,14 @@
 <?php
-// Kết nối đến MySQL
+
 $servername = "localhost";
-$username = "root";  // Tên người dùng mặc định là "root"
-$password = "";      // Mật khẩu mặc định (rỗng nếu không thiết lập)
+$username = "root";  
+$password = "";      
 $conn = new mysqli($servername, $username, $password);
 
-// Kiểm tra kết nối
 if ($conn->connect_error) {
     die("Kết nối thất bại: " . $conn->connect_error);
 }
 
-// Tạo cơ sở dữ liệu "quiz"
 $sql = "CREATE DATABASE IF NOT EXISTS quiz";
 if ($conn->query($sql) === TRUE) {
     echo "Cơ sở dữ liệu 'quiz' đã được tạo thành công.\n";
@@ -18,10 +16,8 @@ if ($conn->query($sql) === TRUE) {
     echo "Lỗi khi tạo cơ sở dữ liệu: " . $conn->error;
 }
 
-// Chọn cơ sở dữ liệu "quiz"
 $conn->select_db("quiz");
 
-// Tạo bảng "questions" nếu chưa tồn tại
 $sql = "CREATE TABLE IF NOT EXISTS questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
@@ -38,21 +34,18 @@ if ($conn->query($sql) === TRUE) {
     echo "Lỗi khi tạo bảng: " . $conn->error;
 }
 
-// Đóng kết nối
 $conn->close();
 ?>
 <?php
-// Đọc dữ liệu từ file questions.txt
+
 $filename = "question.txt";
 $questions = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-// Tạo mảng để lưu câu trả lời đúng
 $answers = [];
 $current_question = [];
 foreach ($questions as $line) {
     if (strpos($line, "Câu") === 0) {
         if (!empty($current_question)) {
-            // Lưu câu trả lời đúng vào mảng
             if (isset($current_question[5])) {
                 $answers[] = trim(substr($current_question[5], strpos($current_question[5], ":") + 1));
             }
@@ -69,7 +62,6 @@ foreach ($questions as $line) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bài trắc nghiệm</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -77,31 +69,35 @@ foreach ($questions as $line) {
         <h2 class="text-center">Bài Trắc Nghiệm</h2>
         <form method="post" action="result.php">
             <?php
-            // Hiển thị câu hỏi và đáp án
-            $current_question = [];
-            foreach ($questions as $index => $question) {
-                if (strpos($question, "Câu") === 0) {
-                    $current_question = [];
-                    $current_question[] = $question;
-                    $current_question[] = $questions[$index + 1];
-                    $current_question[] = $questions[$index + 2];
-                    $current_question[] = $questions[$index + 3];
-                    $current_question[] = $questions[$index + 4];
-                    $current_question[] = $questions[$index + 5];
+            $question_number = 1; // Đếm câu hỏi
+
+            for ($i = 0; $i < count($questions); $i++) {
+                if (strpos($questions[$i], "Câu") === 0) {
+                    // Lấy câu hỏi và các đáp án
+                    $question_text = $questions[$i];
+                    $option_a = $questions[$i + 1];
+                    $option_b = $questions[$i + 2];
+                    $option_c = $questions[$i + 3];
+                    $option_d = $questions[$i + 4];
 
                     echo "<div class='card mb-4'>";
-                    echo "<div class='card-header'><strong>{$current_question[0]}</strong></div>";
+                    echo "<div class='card-header'><strong>{$question_text}</strong></div>";
                     echo "<div class='card-body'>";
-                    
-                    for ($i = 1; $i <= 4; $i++) {
-                        $answer = substr($current_question[$i], 0, 1); // A, B, C, D
+
+                    // Hiển thị các đáp án
+                    $options = [$option_a, $option_b, $option_c, $option_d];
+                    foreach ($options as $option) {
+                        $answer = substr($option, 0, 1); // Lấy ký tự đầu làm giá trị
                         echo "<div class='form-check'>";
-                        echo "<input class='form-check-input' type='radio' name='question{$index}' value='{$answer}' id='question{$index}{$answer}'>";
-                        echo "<label class='form-check-label' for='question{$index}{$answer}'>{$current_question[$i]}</label>";
+                        echo "<input class='form-check-input' type='radio' name='question{$question_number}' value='{$answer}' id='question{$question_number}_{$answer}'>";
+                        echo "<label class='form-check-label' for='question{$question_number}_{$answer}'>{$option}</label>";
                         echo "</div>";
                     }
+
                     echo "</div>";
                     echo "</div>";
+
+                    $question_number++;
                 }
             }
             ?>

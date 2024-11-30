@@ -1,13 +1,13 @@
-Câu 1: Đây là câu hỏi đầu tiên?
-A. Đáp án A
-B. Đáp án B
-C. Đáp án C
-D. Đáp án D
-Đáp án: A
-
-Câu 2: Đây là câu hỏi thứ hai?
-A. Đáp án A
-B. Đáp án B
-C. Đáp án C
-D. Đáp án D
+Câu 1: Thành phần nào sau đây không phải là thành phần giao diện UI trong Android
+A. Text View
+B. Button
+C. Service
+D. ImageView
 Đáp án: C
+
+Câu 2: Layout nào thường được sử dụng để sắp xếp các thành phần UI theo chiều dọc, chiều ngang
+A. Relativelayout
+B. Linearlayout
+C. FrameLayout
+D. Constraintlayout
+Đáp án: B
